@@ -12,6 +12,14 @@ class Workspace:
     def __init__(self, root: Path) -> None:
         self.root = root
 
+        self.python_files: list[Path] = []
+
+        self.settings_file: Path | None = None
+
+        self.url_files: list[Path] = []
+
+        self.root_url_file: Path | None = None
+
     @property
     def name(self) -> str:
         """

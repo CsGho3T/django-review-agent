@@ -1,4 +1,5 @@
 from djreview.workspace.loader import WorkspaceLoader
+from djreview.engine.scanner import Scanner
 
 
 def main() -> None:
@@ -17,8 +18,33 @@ def main() -> None:
     print(f"Exists  : {workspace.exists}")
     print(f"Django  : {workspace.is_django_project}")
 
-    if workspace.manage_py:
-        print(f"Manage  : {workspace.manage_py}")
+    scanner = Scanner()
+
+    workspace = scanner.scan(workspace)
+
+    print()
+    print("Scan Result")
+    print("----------------------")
+
+    print(
+        f"Python files: {len(workspace.python_files)}"
+    )
+
+    print(
+        f"Settings: {workspace.settings_file}"
+    )
+
+    print(
+        f"Root URL: {workspace.root_url_file}"
+    )
+
+    print()
+
+    print("App URLs:")
+
+    for url_file in workspace.url_files:
+        if url_file != workspace.root_url_file:
+            print(f"- {url_file}")
 
 
 if __name__ == "__main__":
