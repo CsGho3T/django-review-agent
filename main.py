@@ -92,11 +92,17 @@ def main() -> None:
     print("----------------------")
 
     for finding in findings:
-        print(finding.title)
-        print(finding.severity)
-        print(finding.file)
-        print()
+        print(f"Title          : {finding.title}")
+        print(f"Severity       : {finding.severity}")
+        print(f"Category       : {finding.category}")
+        print(f"Description    : {finding.description}")
+        print(f"Recommendation : {finding.recommendation}")
+        print(f"File           : {finding.file}")
 
+        if finding.line:
+            print(f"Line           : {finding.line}")
+
+        print("----------------------")
 
 if __name__ == "__main__":
     main()

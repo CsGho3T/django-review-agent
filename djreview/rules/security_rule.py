@@ -1,9 +1,11 @@
 from pathlib import Path
-
 from djreview.models.project import ProjectMap
-from djreview.models.finding import Finding
 from djreview.rules.base_rule import BaseRule
-
+from djreview.models.finding import (
+    Finding,
+    Severity,
+    Category,
+)
 
 class DebugModeRule(BaseRule):
     """
@@ -30,11 +32,20 @@ class DebugModeRule(BaseRule):
             findings.append(
                 Finding(
                     title="Debug mode enabled",
-                    severity="HIGH",
-                    message=(
-                        "DEBUG should be False "
-                        "in production."
+
+                    description=(
+                        "Django DEBUG is enabled. "
+                        "This can expose sensitive information."
                     ),
+
+                    recommendation=(
+                        "Set DEBUG=False in production."
+                    ),
+
+                    severity=Severity.HIGH,
+
+                    category=Category.SECURITY,
+
                     file=project.settings_file,
                 )
             )
