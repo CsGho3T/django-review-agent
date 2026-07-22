@@ -1,6 +1,8 @@
 from djreview.workspace.loader import WorkspaceLoader
 from djreview.engine.scanner import Scanner
 from djreview.engine.app_finder import AppFinder
+from djreview.engine.mapper import ProjectMapper
+
 
 def main() -> None:
     loader = WorkspaceLoader()
@@ -50,14 +52,20 @@ def main() -> None:
 
     workspace = finder.find(workspace)
 
+    mapper = ProjectMapper()
+
+    project_map = mapper.build(workspace)
+
     print()
 
-    print("Django Apps")
+    print("Project Map")
     print("----------------------")
 
-    for app in workspace.apps:
-        print(f"- {app.name}")
+    print(f"Name: {project_map.name}")
+    print(f"Apps: {len(project_map.apps)}")
 
+    for app in project_map.apps:
+        print(f"- {app.name}")
 
 
 if __name__ == "__main__":
