@@ -1,6 +1,6 @@
 from djreview.workspace.loader import WorkspaceLoader
 from djreview.engine.scanner import Scanner
-
+from djreview.engine.app_finder import AppFinder
 
 def main() -> None:
     loader = WorkspaceLoader()
@@ -45,6 +45,19 @@ def main() -> None:
     for url_file in workspace.url_files:
         if url_file != workspace.root_url_file:
             print(f"- {url_file}")
+
+    finder = AppFinder()
+
+    workspace = finder.find(workspace)
+
+    print()
+
+    print("Django Apps")
+    print("----------------------")
+
+    for app in workspace.apps:
+        print(f"- {app['name']}")
+
 
 
 if __name__ == "__main__":
