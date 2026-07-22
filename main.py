@@ -2,6 +2,8 @@ from djreview.workspace.loader import WorkspaceLoader
 from djreview.engine.scanner import Scanner
 from djreview.engine.app_finder import AppFinder
 from djreview.engine.mapper import ProjectMapper
+from djreview.engine.reviewer import ReviewEngine
+from djreview.rules.security_rule import DebugModeRule
 
 
 def main() -> None:
@@ -52,6 +54,13 @@ def main() -> None:
 
     workspace = finder.find(workspace)
 
+    print()
+
+    print("Workspace Apps")
+    print("----------------------")
+
+    for app in workspace.apps:
+        print(f"- {app.name}")
     mapper = ProjectMapper()
 
     project_map = mapper.build(workspace)
@@ -66,6 +75,27 @@ def main() -> None:
 
     for app in project_map.apps:
         print(f"- {app.name}")
+
+    review_engine = ReviewEngine(
+        rules=[
+            DebugModeRule()
+        ]
+    )
+
+    findings = review_engine.review(
+        project_map
+    )
+
+    print()
+
+    print("Review Result")
+    print("----------------------")
+
+    for finding in findings:
+        print(finding.title)
+        print(finding.severity)
+        print(finding.file)
+        print()
 
 
 if __name__ == "__main__":

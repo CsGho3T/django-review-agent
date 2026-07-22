@@ -2,7 +2,6 @@ from pathlib import Path
 from djreview.models.app import DjangoApp
 from djreview.workspace.workspace import Workspace
 
-
 class AppFinder:
     """
     Discover Django applications inside a project.
@@ -15,16 +14,20 @@ class AppFinder:
 
         for item in workspace.root.iterdir():
 
+
             if not item.is_dir():
                 continue
 
             if item.name.startswith("."):
                 continue
 
-            if self._is_django_app(item):
+            is_app = self._is_django_app(item)
+
+            if is_app:
                 workspace.apps.append(
                     self._analyze_app(item)
                 )
+
 
         return workspace
 
