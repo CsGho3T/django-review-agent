@@ -5,8 +5,8 @@ class Workspace:
     """
     Represents a Django project loaded into the review engine.
 
-    This object stores metadata and paths used during
-    the review lifecycle.
+    This object stores information about the project
+    during the review lifecycle.
     """
 
     def __init__(self, root: Path) -> None:
@@ -32,3 +32,24 @@ class Workspace:
         Return absolute project path.
         """
         return str(self.root)
+
+    @property
+    def manage_py(self) -> Path | None:
+        """
+        Return Django manage.py path if exists.
+        """
+        manage_file = self.root / "manage.py"
+
+        if manage_file.exists():
+            return manage_file
+
+        return None
+
+    @property
+    def is_django_project(self) -> bool:
+        """
+        Check whether workspace is a Django project.
+
+        A Django project must contain manage.py.
+        """
+        return self.manage_py is not None
