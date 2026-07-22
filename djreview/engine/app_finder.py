@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from djreview.models.app import DjangoApp
 from djreview.workspace.workspace import Workspace
 
 
@@ -50,19 +50,33 @@ class AppFinder:
         return required_files.issubset(files)
 
     def _analyze_app(
-        self,
-        path: Path
-    ) -> dict:
+            self,
+            path: Path
+    ) -> DjangoApp:
         """
-        Collect app information.
+        Create DjangoApp object.
         """
 
-        return {
-            "name": path.name,
-            "path": path,
-            "files": [
-                file.name
-                for file in path.iterdir()
-                if file.is_file()
-            ],
-        }
+        app = DjangoApp(
+            name=path.name,
+            path=path,
+        )
+
+        for file in path.iterdir():
+
+            if file.name == "models.py":
+                app.models_file = file
+
+            elif file.name == "views.py":
+                app.views_file = file
+
+            elif file.name in {"urls.py", "url.py"}:
+                app.urls_file = file
+
+            elif file.name == "admin.py":
+                app.admin_file = file
+
+            elif file.name == "migrations":
+                app.migrations_path = file
+
+        return app

@@ -56,7 +56,7 @@ def main() -> None:
     print("----------------------")
 
     for app in workspace.apps:
-        print(f"- {app['name']}")
+        print(f"- {app.name}")
 
 
 

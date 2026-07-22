@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from djreview.models.app import DjangoApp
 
 class Workspace:
     """
@@ -15,7 +15,7 @@ class Workspace:
         self.settings_file: Path | None = None
         self.url_files: list[Path] = []
         self.root_url_file: Path | None = None
-        self.apps: list[dict] = []
+        self.apps: list[DjangoApp] = []
 
     @property
     def name(self) -> str:
