@@ -1,18 +1,21 @@
 from djreview.rules.base_rule import BaseRule
-from djreview.rules.security_rule import DebugModeRule
+from djreview.rules.security.registry import (
+    SecurityRuleRegistry,
+)
 
 
 class RuleRegistry:
     """
-    Provides all enabled review rules.
+    Register every enabled review rule.
     """
 
     @staticmethod
     def get_rules() -> list[BaseRule]:
-        """
-        Return active rules.
-        """
 
-        return [
-            DebugModeRule(),
-        ]
+        rules: list[BaseRule] = []
+
+        rules.extend(
+            SecurityRuleRegistry.get_rules()
+        )
+
+        return rules
