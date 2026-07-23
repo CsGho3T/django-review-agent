@@ -3,8 +3,7 @@ from djreview.engine.scanner import Scanner
 from djreview.engine.app_finder import AppFinder
 from djreview.engine.mapper import ProjectMapper
 from djreview.engine.reviewer import ReviewEngine
-from djreview.rules.security_rule import DebugModeRule
-
+from djreview.registry import RuleRegistry
 
 def main() -> None:
     loader = WorkspaceLoader()
@@ -77,9 +76,7 @@ def main() -> None:
         print(f"- {app.name}")
 
     review_engine = ReviewEngine(
-        rules=[
-            DebugModeRule()
-        ]
+        rules=RuleRegistry.get_rules()
     )
 
     findings = review_engine.review(
