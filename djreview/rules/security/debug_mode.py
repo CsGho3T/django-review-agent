@@ -1,5 +1,8 @@
 import ast
+
+from djreview.engine.ast_visitor import ASTVisitor
 from djreview.engine.parser import PythonParser
+
 from djreview.models.finding import (
     Finding,
     Severity,
@@ -7,8 +10,6 @@ from djreview.models.finding import (
 )
 from djreview.models.project import ProjectMap
 from djreview.rules.base_rule import BaseRule
-
-
 
 class DebugModeRule(BaseRule):
     """
@@ -26,49 +27,42 @@ class DebugModeRule(BaseRule):
 
         if not project.settings_file:
             return findings
+
+
         parser = PythonParser()
 
         tree = parser.parse(
             project.settings_file
         )
 
+        visitor = ASTVisitor(tree)
 
-        for node in ast.walk(tree):
+        node = visitor.find_assignment("DEBUG")
 
-            if not isinstance(node, ast.Assign):
-                continue
+        if (
+                node
+                and isinstance(node.value, ast.Constant)
+                and node.value.value is True
+        ):
+            findings.append(
+                Finding(
+                    title="Debug mode enabled",
 
-            for target in node.targets:
+                    description=(
+                        "Django DEBUG is enabled. "
+                        "This can expose sensitive information."
+                    ),
 
-                if (
-                        isinstance(target, ast.Name)
-                        and target.id == "DEBUG"
-                ):
+                    recommendation=(
+                        "Set DEBUG=False in production."
+                    ),
 
-                    if (
-                            isinstance(node.value, ast.Constant)
-                            and node.value.value is True
-                    ):
+                    severity=Severity.HIGH,
 
-                        findings.append(
-                            Finding(
-                                title="Debug mode enabled",
+                    category=Category.SECURITY,
 
-                                description=(
-                                    "Django DEBUG is enabled. "
-                                    "This can expose sensitive information."
-                                ),
-
-                                recommendation=(
-                                    "Set DEBUG=False in production."
-                                ),
-
-                                severity=Severity.HIGH,
-
-                                category=Category.SECURITY,
-
-                                file=project.settings_file,
-                            )
-                        )
+                    file=project.settings_file,
+                )
+            )
 
         return findings

@@ -8,3 +8,4 @@ from djreview.models.finding import (
 )
 from djreview.engine.parser import PythonParser
 import ast
+from djreview.engine.ast_visitor import ASTVisitor
