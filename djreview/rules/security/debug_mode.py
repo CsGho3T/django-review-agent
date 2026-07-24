@@ -1,3 +1,5 @@
+import ast
+from djreview.engine.parser import PythonParser
 from djreview.models.finding import (
     Finding,
     Severity,
@@ -5,6 +7,7 @@ from djreview.models.finding import (
 )
 from djreview.models.project import ProjectMap
 from djreview.rules.base_rule import BaseRule
+
 
 
 class DebugModeRule(BaseRule):
@@ -23,31 +26,49 @@ class DebugModeRule(BaseRule):
 
         if not project.settings_file:
             return findings
+        parser = PythonParser()
 
-        content = project.settings_file.read_text(
-            encoding="utf-8"
+        tree = parser.parse(
+            project.settings_file
         )
 
-        if "DEBUG = True" in content:
-            findings.append(
-                Finding(
-                    title="Debug mode enabled",
 
-                    description=(
-                        "Django DEBUG is enabled. "
-                        "This can expose sensitive information."
-                    ),
+        for node in ast.walk(tree):
 
-                    recommendation=(
-                        "Set DEBUG=False in production."
-                    ),
+            if not isinstance(node, ast.Assign):
+                continue
 
-                    severity=Severity.HIGH,
+            for target in node.targets:
 
-                    category=Category.SECURITY,
+                if (
+                        isinstance(target, ast.Name)
+                        and target.id == "DEBUG"
+                ):
 
-                    file=project.settings_file,
-                )
-            )
+                    if (
+                            isinstance(node.value, ast.Constant)
+                            and node.value.value is True
+                    ):
+
+                        findings.append(
+                            Finding(
+                                title="Debug mode enabled",
+
+                                description=(
+                                    "Django DEBUG is enabled. "
+                                    "This can expose sensitive information."
+                                ),
+
+                                recommendation=(
+                                    "Set DEBUG=False in production."
+                                ),
+
+                                severity=Severity.HIGH,
+
+                                category=Category.SECURITY,
+
+                                file=project.settings_file,
+                            )
+                        )
 
         return findings

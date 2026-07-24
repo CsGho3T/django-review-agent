@@ -5,6 +5,7 @@ from djreview.engine.mapper import ProjectMapper
 from djreview.engine.reviewer import ReviewEngine
 from djreview.registry import RuleRegistry
 
+
 def main() -> None:
     loader = WorkspaceLoader()
 
@@ -100,6 +101,8 @@ def main() -> None:
             print(f"Line           : {finding.line}")
 
         print("----------------------")
+
+
 
 if __name__ == "__main__":
     main()
